@@ -1,0 +1,8 @@
+# dados da competição: não redistribuir (Competition Rules) e o .db tem 93 MB
+data/
+
+# gerado pelo main.py
+out/
+
+.venv/
+__pycache__/
