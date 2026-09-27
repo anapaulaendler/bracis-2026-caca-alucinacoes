@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 from classificar import classificar_lei
-from extrair import extrair
+from extrair_leis import extrair
 from resolver import carregar_leis
 
 sys.path.insert(0, str(Path(__file__).parent / "data"))
