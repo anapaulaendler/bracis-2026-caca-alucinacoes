@@ -1,5 +1,6 @@
 import re
 import sqlite3
+import sys
 from pathlib import Path
 
 from normalizar import classes_processuais, digitos_ocr, norma_canonica
@@ -7,24 +8,26 @@ from normalizar import classes_processuais, digitos_ocr, norma_canonica
 DB = Path(__file__).parent / "data" / "desafio1_bracis.db"
 
 
-def carregar_leis() -> dict[tuple[str, int], int]:
-    leis = {}
+def carregar_leis(db: Path = DB) -> dict[tuple[str, int], int]:
+    leis, pulados = {}, 0
 
-    con = sqlite3.connect(DB)
+    con = sqlite3.connect(db)
 
     for doc_id, texto in con.execute("SELECT id, texto FROM documentos WHERE natureza = 'dispositivo'"):
         m = re.match(r"Artigo\s+(\d+)\S*\s+d[oa]\s+(.{0,60})", texto)
 
-        artigo, norma = int(m.group(1)), m.group(2) # type: ignore
-        leis[(norma_canonica(norma), artigo)] = doc_id
+        if m is None:
+            pulados += 1
+            continue
+
+        leis[(norma_canonica(m.group(2)), int(m.group(1)))] = doc_id
 
     con.close()
 
-    return leis
+    if pulados:
+        print(f"carregar_leis: {pulados} dispositivo(s) fora do padrão ignorado(s)", file=sys.stderr)
 
-if __name__ == "__main__":
-    for chave, doc_id in sorted(carregar_leis().items()):
-        print(chave, doc_id)
+    return leis
 
 RE_NUM_CABECALHO = re.compile(r"(?<![\d/])\d(?:[\d.\-]|[.\-] )*\d(?!\d)")
 RE_CNJ_TST = r"\d{1,7}-\d{2}\.\d{4}\.5\.\d{2}\.\d{4}"
@@ -87,5 +90,10 @@ def carregar_sumulas() -> dict[tuple[bool, int], tuple[int, str]]:
         sumulas[(bool(m.group(1)), int(m.group(2)))] = (doc_id, tribunal)
     
     con.close()
-    
+
     return sumulas
+
+
+if __name__ == "__main__":
+    for chave, doc_id in sorted(carregar_leis().items()):
+        print(chave, doc_id)

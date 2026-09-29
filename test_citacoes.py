@@ -4,6 +4,8 @@ from extrair_juris import extrair_juris
 from extrair_leis import extrair
 from normalizar import chave_lei, classes_processuais, digitos_ocr, norma_canonica
 
+DADOS = (Path(__file__).parent / "data" / "kaggle_metric.py").exists()
+
 
 def test_extrai_lei_com_incisos():
     casos = {
@@ -67,8 +69,29 @@ def test_trecho_bate_com_offsets():
         assert texto[c["inicio"]:c["fim"]] == c["trecho"], c
 
 
+def test_carregar_leis_pula_dispositivo_fora_do_padrao():
+    import sqlite3
+    import tempfile
+
+    from resolver import carregar_leis
+
+    with tempfile.TemporaryDirectory() as tmp:
+        db = Path(tmp) / "mini.db"
+        con = sqlite3.connect(db)
+        con.execute("CREATE TABLE documentos (id INTEGER, natureza TEXT, tribunal TEXT, texto TEXT)")
+        con.executemany("INSERT INTO documentos VALUES (?, ?, ?, ?)", [
+            (1, "dispositivo", None, "Artigo 5º da Constituição Federal de 1988"),
+            (2, "dispositivo", None, "texto sem o cabeçalho esperado"),
+        ])
+        con.commit()
+        con.close()
+        assert carregar_leis(db) == {("CF", 5): 1}
+
+
 if __name__ == "__main__":
     for nome, teste in list(globals().items()):
         if nome.startswith("test_"):
             teste()
             print("ok", nome)
+    if not DADOS:
+        print("aviso: data/ ausente — testes dependentes de dados retornaram cedo")
