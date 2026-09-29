@@ -88,10 +88,61 @@ def test_carregar_leis_pula_dispositivo_fora_do_padrao():
         assert carregar_leis(db) == {("CF", 5): 1}
 
 
+def _cit(trecho, forma=None):
+    c = {"inicio": 0, "fim": len(trecho), "trecho": trecho}
+    return {**c, "forma": forma} if forma else c
+
+
+def test_classificar_lei():
+    from classificar import classificar_lei
+
+    leis = {("CF", 5): 123}
+
+    r = classificar_lei(_cit("art. 5º, LV, da Constituição Federal"), leis)
+    assert (r["classificacao"], r["resolucao"], r["regra"]) == ("real", {"id_canonico": "123"}, "lei_resolvida")
+    
+    r = classificar_lei(_cit("art. 999 da Constituição Federal"), leis)
+    assert (r["classificacao"], r["regra"]) == ("inventada", "lei_nao_achada")
+    
+    r = classificar_lei(_cit("art. 1 do Estatuto da Cidade"), leis)
+    assert (r["classificacao"], r["resolucao"], r["regra"]) == ("incompleta", None, "lei_norma_desconhecida")
+
+
+def test_classificar_juris():
+    from classificar import classificar_juris
+
+    sumulas = {(False, 7): (99, "STJ")}
+    
+    indice = {
+        "3647129": [{"id": 5, "classes": {"RE"}, "cabecalho": "a"}],
+        "1234567": [{"id": 6, "classes": {"AGINT", "RESP"}, "cabecalho": "b"}, {"id": 7, "classes": {"HC"}, "cabecalho": "c"}],
+        "7654321": [{"id": 8, "classes": {"HC"}, "cabecalho": "d"}, {"id": 9, "classes": {"HC"}, "cabecalho": "e"}],
+    }
+
+    casos = [
+        (_cit("precedente do STF de 2024, da relatoria de Cármen Lúcia", "vaga"), "incompleta", None, "vaga"),
+        (_cit("Tema 1.046 da repercussão geral", "tema"), "inventada", None, "tema"),
+        (_cit("Súmula 7 do STJ", "sumula"), "real", "99", "sumula_ok"),
+        (_cit("Súmula 7 do STF", "sumula"), "inventada", None, "sumula_nao_achada"),
+        (_cit("RE. nº 3.647.129-RS", "processo"), "real", "5", "processo_unico"),
+        (_cit("AgInt no REsp 1.234.567/SP", "processo"), "real", "6", "processo_desempate"),
+        (_cit("REsp 7.654.321/SP", "processo"), "incompleta", None, "processo_empate"),
+        (_cit("REsp 1.111.111/SP", "processo"), "inventada", None, "processo_nao_achado"),
+    ]
+    
+    for citacao, classe, doc_id, regra in casos:
+        r = classificar_juris(citacao, indice, sumulas)
+        
+        got_id = r["resolucao"]["id_canonico"] if r["resolucao"] else None
+        
+        assert (r["classificacao"], got_id, r["regra"]) == (classe, doc_id, regra), (citacao["trecho"], r)
+
+
 if __name__ == "__main__":
     for nome, teste in list(globals().items()):
         if nome.startswith("test_"):
             teste()
             print("ok", nome)
+            
     if not DADOS:
         print("aviso: data/ ausente — testes dependentes de dados retornaram cedo")
