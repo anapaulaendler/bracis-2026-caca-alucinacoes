@@ -3,20 +3,19 @@ import re
 from extrair_juris import RE_NUMERO
 from normalizar import chave_lei, classes_processuais, digitos_ocr
 
-# TODO: calibrar.py
 CONFIANCA = {
-    "lei_resolvida": 0.95,
-    "lei_nao_achada": 0.85,
-    "lei_norma_desconhecida": 0.6,
-    "vaga": 0.9,
-    "tema": 0.8,
-    "sumula_ok": 0.95,
-    "sumula_nao_achada": 0.9,
-    "processo_nao_achado": 0.9,
-    "processo_nao_achado_ocr": 0.9,
-    "processo_unico": 0.95,
-    "processo_desempate": 0.75,
-    "processo_empate": 0.6,
+    "lei_resolvida": 0.995,# n=197
+    "lei_nao_achada": 0.984,# n=190
+    "lei_norma_desconhecida": 0.600,  # sem amostra sob ruído: mantido
+    "vaga": 0.998,# n=480
+    "tema": 0.923,# n=11
+    "sumula_ok": 0.987,# n=75
+    "sumula_nao_achada": 0.990,# n=101
+    "processo_nao_achado": 0.978,# n=400
+    "processo_nao_achado_ocr": 0.841,# n=262
+    "processo_unico": 0.999,# n=1077
+    "processo_desempate": 0.938,# n=14
+    "processo_empate": 0.600,  # sem amostra sob ruído: mantido
 }
 
 
