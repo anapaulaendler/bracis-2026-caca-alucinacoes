@@ -19,15 +19,15 @@ def _processar(documento_id: str, texto: str, leis: dict, indice: dict, sumulas:
     return {"documento_id": documento_id, "citacoes": citacoes}
 
 
-def _carregar_recursos() -> tuple[dict, dict, dict]:
+def carregar_recursos() -> tuple[dict, dict, dict]:
     return carregar_leis(), carregar_indice(), carregar_sumulas()
 
 
-def _ler_textos(pasta: Path) -> list[tuple[str, str]]:
+def ler_textos(pasta: Path) -> list[tuple[str, str]]:
     return [(txt.stem, txt.read_text(encoding="utf-8")) for txt in sorted(pasta.glob("*.txt"))]
 
 
-def _processar_textos(textos: list[tuple[str, str]], recursos: tuple) -> list[dict]:
+def processar_textos(textos: list[tuple[str, str]], recursos: tuple) -> list[dict]:
     return [_processar(stem, texto, *recursos) for stem, texto in textos]
 
 
@@ -36,7 +36,7 @@ def main() -> None:
     saida = Path("out/json")
     saida.mkdir(parents=True, exist_ok=True)
 
-    docs = _processar_textos(_ler_textos(pasta), _carregar_recursos())
+    docs = processar_textos(ler_textos(pasta), carregar_recursos())
 
     for doc in docs:
         (saida / f"{doc['documento_id']}.json").write_text(json.dumps(doc, ensure_ascii=False, indent=2), encoding="utf-8")

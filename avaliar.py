@@ -6,7 +6,8 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).parent / "data"))
-from kaggle_metric import avaliar  # noqa: E402
+from json_to_submission import encode  # noqa: E402
+from kaggle_metric import ParticipantVisibleError, avaliar  # noqa: E402
 
 GABARITO = Path(__file__).parent / "data" / "goldenset_offsets.csv"
 
@@ -31,6 +32,20 @@ def carregar_solution() -> pd.DataFrame:
     return pd.DataFrame(linhas, columns=["documento_id", "nivel", "citacoes"])
 
 
+def submissao(docs: list[dict]) -> pd.DataFrame:
+    return pd.DataFrame([(d["documento_id"], encode(d)) for d in docs], columns=["documento_id", "citacoes"])
+
+
+def pontuar(docs: list[dict], solution: pd.DataFrame) -> dict:
+    ids = {d["documento_id"] for d in docs}
+
+    try:
+        return avaliar(solution[solution["documento_id"].isin(ids)], submissao(docs))
+    
+    except ParticipantVisibleError as e:
+        return {"rejeitada": str(e)}
+
+    
 def main() -> None:
     caminho = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("out/submission.csv")
     sub = pd.read_csv(caminho, dtype=str, keep_default_na=False)
