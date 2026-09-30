@@ -13,10 +13,14 @@ CONFIANCA = {
     "sumula_ok": 0.95,
     "sumula_nao_achada": 0.9,
     "processo_nao_achado": 0.9,
+    "processo_nao_achado_ocr": 0.9,
     "processo_unico": 0.95,
     "processo_desempate": 0.75,
     "processo_empate": 0.6,
 }
+
+
+SINAL_OCR = re.compile(r"\d[A-Za-z]|[A-Za-z]\d|\d,\d")
 
 
 def _real(citacao, regra, doc_id):
@@ -65,7 +69,8 @@ def classificar_juris(citacao: dict, indice: dict, sumulas: dict) -> dict:
     candidatos = indice.get(digitos_ocr(max(numeros, key=len)), [])
 
     if not candidatos:
-        return _sem_link(citacao, "processo_nao_achado", "inventada")
+        regra = "processo_nao_achado_ocr" if SINAL_OCR.search(trecho) else "processo_nao_achado"
+        return _sem_link(citacao, regra, "inventada")
 
     feitos = list({c["cabecalho"]: c for c in candidatos}.values())
     if len(feitos) == 1:
