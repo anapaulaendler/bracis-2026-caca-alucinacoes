@@ -51,7 +51,7 @@ def acertos_por_citacao(rodadas: list[list[dict]], solution) -> list[tuple[str, 
 
                 classe_certa = prevista["classificacao"] == esperada["classe"]
                 
-                link_certo = esperada["classe"] != "real" or _norm_id(prevista["resolucao"]["id_canonico"]) in esperada["doc_ids"]
+                link_certo = esperada["classe"] != "real" or (prevista["resolucao"] is not None and _norm_id(prevista["resolucao"]["id_canonico"]) in esperada["doc_ids"])
 
                 resultado.append((prevista["regra"], int(classe_certa and link_certo), prevista["confianca"]))
 
@@ -75,7 +75,7 @@ def brier(pares: list[tuple[str, int, float]]) -> float:
 def aplicar(tabela: dict[str, float], rodadas: list[list[dict]]) -> None:
     for docs in rodadas:
         for doc in docs:
-            for citacao in doc:
+            for citacao in doc["citacoes"]:
                 citacao["confianca"] = tabela.get(citacao["regra"], citacao["confianca"])
 
 
