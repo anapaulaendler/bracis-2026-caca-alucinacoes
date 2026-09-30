@@ -14,14 +14,15 @@ CONECTORES = {"no", "na", "nos", "nas", "em", "de", "e", "do", "da", "-", "proce
 MARCA_NUMERO = re.compile(r"n[º°o.]?|N[º°oO]\.?")
 
 # número com ruído de OCR
+INICIO_NUM = r"(?:\d|[OolISsGg](?=\d))" # dígito (ou letra de OCR) com um dígito logo depois ("O600530" = sim // "Os" = não).
 RE_NUMERO = re.compile(
-    r"(?<![\w/])\d[\dOolISsGg.\-–]*"
-    r"(?:\s{1,2}[.\-–]?\d[\dOolISsGg.\-–]*){0,4}"
+    rf"(?<![\w/]){INICIO_NUM}[\dOolISsGg.\-–]*"
+    rf"(?:\s{{1,2}}[.\-–]?{INICIO_NUM}[\dOolISsGg.\-–]*){{0,4}}"
 )
 RE_UF = re.compile(r"\s{0,2}[/\-–(]\s{0,2}[A-Z]{2}\)?(?![a-z])")
 
 RE_SUMULA = re.compile(
-    r"(?:S|5)[úuÚU]m(?:ula|\.)\s+(?:Vinculante\s+)?(?:n[º°.]?\s*)?\d+"
+    rf"(?:S|5)[úuÚU]m(?:ula|\.)\s+(?:Vinculante\s+)?(?:n[º°.]?\s*)?{INICIO_NUM}[\dOolISsGg]*"
     r"(?:\s+do\s+(?:STF|STJ|TST|TSE))?",
     re.IGNORECASE,
 )
@@ -30,7 +31,7 @@ RE_TEMA = re.compile(r"Tem[aãá]\s+(?:n[º°.]?\s*)?\d[\d.]*\s+da\s+repercuss\w
 TRIBUNAL = r"(?:STF|STJ|TST|TSE|STM)"
 NOME = r"[A-ZÀ-Ú][\wÀ-ú]*(?:\s+(?:(?:de|da|do|dos|De|DA|DE|Dc)\s+)?[A-ZÀ-Ú][\wÀ-ú]*){0,5}"
 RE_VAGA = re.compile(
-    rf"(?:\s+do\s+{TRIBUNAL})?,?\s+(?:\w+\s+)?(?P<ano_kw>em|de)\s+(?:19|20)\d\d,?\s+"
+    rf"(?:\s+do\s+{TRIBUNAL})?,?\s+(?:\w+\s+)?(?P<ano_kw>em|de)\s+(?:[1lI][9g]|2[0Oo])[\dOolISsGg]{{2}},?\s+"
     rf"(?:(?:pela|sob|da)\s+relatoria\s+d[ec]|Rel\.\s+Min\.)\s+{NOME}"
 )
 

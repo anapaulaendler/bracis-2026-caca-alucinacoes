@@ -51,7 +51,7 @@ def classificar_juris(citacao: dict, indice: dict, sumulas: dict) -> dict:
 
     if forma == "sumula":
         vinculante = "vinculante" in trecho.lower()
-        numero = int(re.search(r"\b\d+\b", trecho).group(0)) # type: ignore
+        numero = int(digitos_ocr(re.search(r"m(?:ula|\.)\s+(?:vinculante\s+)?(?:n[º°.]?\s*)?(\S+)", trecho, re.I).group(1)))  # type: ignore
         
         achou = sumulas.get((vinculante, numero))
         tribunal_citado = re.search(r"STF|STJ|TST|TSE", trecho)
