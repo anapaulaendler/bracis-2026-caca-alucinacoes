@@ -138,6 +138,15 @@ def test_classificar_juris():
         assert (r["classificacao"], got_id, r["regra"]) == (classe, doc_id, regra), (citacao["trecho"], r)
 
 
+def test_pipeline_desfaz_toda_troca_da_regua():
+    from normalizar import OCR
+    from ruido import TROCAS
+
+    for digito, letras in TROCAS.items():
+        for letra in letras:
+            assert digito == "º" or OCR.get(letra) == digito, (digito, letra)
+
+
 if __name__ == "__main__":
     for nome, teste in list(globals().items()):
         if nome.startswith("test_"):

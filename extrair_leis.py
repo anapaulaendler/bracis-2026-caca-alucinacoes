@@ -1,9 +1,13 @@
 import re
 
+from normalizar import LETRAS_OCR, NUM_ARTIGO
+
+ANO = rf"(?-i:[\d{LETRAS_OCR}]){{4}}" # "2015", "20I5" 
+
 # nome das normas que aparecem depois de "do/da"
 NORMAS = [
-    r"Lei\s+Complementar\s+n[º°o.]?\s*[\d.]+/\d{4}",
-    r"Lei\s+n[º°o.]?\s?[\d.]+/\d{4}",
+    rf"Lei\s+Complementar\s+n[º°o.]?\s*{NUM_ARTIGO}/{ANO}", # "13,105" / "l3.105"
+    rf"Lei\s+n[º°o.]?\s?{NUM_ARTIGO}/{ANO}",
     r"Constitui\w+\s+(?:F\w+|da\s+Rep\w+)", # bem quebrado pensando em erros de OCR, como "Fedcral"
     r"C[óo]digo\s+de\s+Processo\s+(?:Civil|Penal)",
     r"C[óo]digo\s+de\s+Defesa\s+do\s+Consumidor",
@@ -15,7 +19,7 @@ NORMAS = [
 
 RE_LEI = re.compile(
     r"art(?:igo|\.)?\s*" # "art." / "artigo" / "art"
-    r"\d[\d.]*[º°o]?" # 5º, 373, 1.134
+    + NUM_ARTIGO + r"[º°o]?" # 5º, 373, 1.134, 1,134, B96
     r"(?:,\s*[^,\n]{1,15}?)*?" # complementos: ", I", ", § 1º-A", ", 'g'"
     r",?\s+d[oa]\s+" # " do " / ", da "
     r"(?:" + "|".join(NORMAS) + r")",

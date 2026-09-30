@@ -37,15 +37,26 @@ LEI_POR_NOME = {
     "ce": "CE", "cc": "CC", "cpc": "CPC", "cpp": "CPP", "cpm": "CPM", "clt": "CLT", "cdc": "CDC", "cf": "CF",
 }
 
+OCR = {"O": "0", "o": "0", "l": "1", "I": "1", "S": "5", "s": "5", "g": "9", "G": "6", "B": "8"}
+LETRAS_OCR = "".join(OCR)
+OCR_PARA_DIGITO = str.maketrans(OCR) # tabelinha para tradução
+
+# (?-i:) pq os regex de artigo usam IGNORECASE (e b/i minúsculos não estão em OCR)
+NUM_ARTIGO = (
+    rf"(?:\d|(?-i:[{LETRAS_OCR}])(?=[.,]?\d))" # começa com dígito ou letra equivalente OCR, e depois disso vem número (com ou sem ponto ou vírgula)
+    rf"(?:[\d.]|(?-i:[{LETRAS_OCR}])(?=\d)|,(?=\d))*" # e depois do primeiro, podemos ter 0 ou mais da ordem (num ou ponto ou LETRAS_OCR SE seguido de num ou virgula SE seguido de num)
+)
+
 def norma_canonica(nome: str) -> str:
     s = sem_acento(nome)
 
-    if re.search(r"complementar\D{0,10}64\b", s):
-        return "LC64"
-
-    m = re.search(r"lei\D{0,10}?([\d.]+)", s)
+    m = re.search(rf"complementar\D{{0,10}}?({NUM_ARTIGO})", nome, re.IGNORECASE) # "nº 64", "nº G4" (OCR)
     if m:
-        numero = so_digitos(m.group(1))
+        return f"LC{digitos_ocr(m.group(1))}"
+
+    m = re.search(rf"lei\D{{0,10}}?({NUM_ARTIGO})", nome, re.IGNORECASE)
+    if m:
+        numero = digitos_ocr(m.group(1))
 
         return LEI_POR_NUMERO.get(numero, f"LEI{numero}")
 
@@ -56,17 +67,15 @@ def norma_canonica(nome: str) -> str:
     return "?"
 
 def chave_lei(trecho: str) -> tuple[str, int] | None:
-    m = re.match(r"art\w*\.?\s*(\d[\d.]*)", trecho, re.IGNORECASE)
+    m = re.match(rf"art\w*\.?\s*({NUM_ARTIGO})", trecho, re.IGNORECASE)
 
     if not m:
         return None
-    
-    artigo = int(so_digitos(m.group(1)))
+
+    artigo = int(digitos_ocr(m.group(1)))
 
     norma = re.split(r"\s+d[oa]\s+", trecho, maxsplit=1)[1]
     return (norma_canonica(norma), artigo)
-
-OCR_PARA_DIGITO = str.maketrans({"O": "0", "o": "0", "l": "1", "I": "1", "S": "5", "s": "5", "g": "9", "G": "6"})
 
 def digitos_ocr(s: str) -> str:
     return so_digitos(s.translate(OCR_PARA_DIGITO))
