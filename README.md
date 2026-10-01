@@ -18,14 +18,21 @@ Solução para o desafio **Jusbrasil × BRACIS 2026**. O sistema lê um parecer 
 
 Os dados da competição não são redistribuídos (regras do desafio). Coloque o conteúdo do zip em `data/`.
 
+Para gerar a submissão basta Python 3.10+, sem dependências. O resultado é determinístico:
+
 ```bash
-python3 -m venv .venv && .venv/bin/pip install pandas
-.venv/bin/python main.py             # gera out/submission.csv
+bash run.sh [pasta_txt] [saida.csv]  # padrão: data/txt -> out/submission.csv
+```
+
+Avaliação e experimentos (precisam de pandas):
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python avaliar.py          # score local com a métrica oficial
 .venv/bin/python ruido.py            # régua de robustez (score × taxa de ruído)
 .venv/bin/python ruido.py --ablacao  # queda por tipo de ruído
 .venv/bin/python calibrar.py         # recalibra a tabela de confiança
-.venv/bin/python test_citacoes.py    # 18 testes; os que precisam de data/ retornam cedo sem ela
+.venv/bin/python test_citacoes.py    # 13 testes
 ```
 
 ## Métrica
