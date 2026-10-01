@@ -84,7 +84,7 @@ A calibração também expôs um ponto fraco: "processo não encontrado" com sin
 ## Limitações
 
 - O conjunto de desenvolvimento é sintético; o score local não garante o teste privado.
-- Não extrai citações no plural ("arts. 186 e 927") nem ano de 2 dígitos ("Lei 9.504/97"), ausentes nos dados.
+- Não extrai citações no plural ("arts. 186 e 927"), ausentes nos dados.
 - O ruído só troca caracteres; não insere nem remove (ex.: "I 821 663" não é recuperado).
 - Regras sem amostra sob ruído mantêm a confiança manual.
 - Não verifica se a lei diz o que o texto afirma (fora da métrica).

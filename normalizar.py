@@ -23,6 +23,13 @@ LEI_POR_NUMERO = {
     "8078": "CDC",
     "5452": "CLT",
     "3689": "CPP",
+    "2848": "CP",
+    "5172": "CTN",
+    "8069": "ECA",
+    "7210": "LEP",
+    "9503": "CTB",
+    "4657": "LINDB",
+    "11340": "LEI11340",
 }
 
 LEI_POR_NOME = {
@@ -33,8 +40,18 @@ LEI_POR_NOME = {
     "penal militar": "CPM",
     "codigo civil": "CC",
     "codigo eleitoral": "CE",
+    "codigo penal": "CP", # depois de "penal militar" e "processo penal"
+    "tributario nacional": "CTN",
+    "crianca e do adolescente": "ECA",
+    "execucao penal": "LEP",
+    "transito brasileiro": "CTB",
+    "introducao as normas": "LINDB",
+    "maria da penha": "LEI11340",
+    "lei das eleicoes": "LEI9504",
     "constitui": "CF",
     "ce": "CE", "cc": "CC", "cpc": "CPC", "cpp": "CPP", "cpm": "CPM", "clt": "CLT", "cdc": "CDC", "cf": "CF",
+    "ctn": "CTN", "eca": "ECA", "lep": "LEP", "ctb": "CTB", "lindb": "LINDB",
+    "cp": "CP", # ana: revisar — por que "cp" precisa ser a última chave?
 }
 
 OCR = {"O": "0", "o": "0", "l": "1", "I": "1", "S": "5", "s": "5", "g": "9", "G": "6", "B": "8"}

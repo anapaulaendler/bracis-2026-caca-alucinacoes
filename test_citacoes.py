@@ -34,6 +34,12 @@ def test_norma_canonica():
         "Consolidação das Leis do Trabalho": "CLT",
         "CLT": "CLT",
         "Estatuto da Cidade": "?",
+        "Código Penal": "CP",
+        "Código Penal Militar": "CPM",
+        "Decreto-Lei nº 2.848, de 7 de dezembro de 1940": "CP",
+        "Lei das Eleições": "LEI9504",
+        "Estatuto da Criança e do Adolescente": "ECA",
+        "CTN": "CTN",
     }
     for nome, sigla in casos.items():
         assert norma_canonica(nome) == sigla, nome
@@ -60,6 +66,24 @@ def test_extrai_juris_todas_as_formas():
         ("processo", "RE. nº 3.647.129-RS"),
         ("processo", "AgInt no REsp 1.234.567/SP"),
     ]
+
+
+def test_extrai_lei_com_ano_curto_e_apelido():
+    casos = {
+        "o art. 73 da Lei nº 9.504/97 veda": ("art. 73 da Lei nº 9.504/97", ("LEI9504", 73)),
+        "art. 290 do Decreto-Lei nº 1.001/69": ("art. 290 do Decreto-Lei nº 1.001/69", ("CPM", 290)),
+        "art. 121 do Código Penal, pena": ("art. 121 do Código Penal", ("CP", 121)),
+        "art. 135, III, do CTN.": ("art. 135, III, do CTN", ("CTN", 135)),
+        "art. 7º da Lei Maria da Penha": ("art. 7º da Lei Maria da Penha", ("LEI11340", 7)),
+        "art. 5º do CPC e": ("art. 5º do CPC", ("CPC", 5)),
+    }
+    for texto, (trecho, chave) in casos.items():
+        (c,) = extrair(texto)
+        assert c["trecho"] == trecho, c
+        assert chave_lei(c["trecho"]) == chave, c
+
+    assert extrair("art. 5º do CPF do réu") == []
+    assert extrair("art. 1º da Lei nº 9.504/199") == []
 
 
 def test_trecho_bate_com_offsets():
