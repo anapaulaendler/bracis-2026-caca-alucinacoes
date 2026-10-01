@@ -59,7 +59,8 @@ def main() -> None:
     recursos, solution = carregar_recursos(), carregar_solution()
     textos = ler_textos(Path(__file__).parent / "data" / "txt")
 
-    print("| taxa | score final | macro-F1 N1 | macro-F1 N2 | F1 real | F1 inventada | F1 incompleta | tau | rejeitadas |")
+    print("| taxa | score final | macro-F1 N1 | macro-F1 N2 | F1 real | F1 inventada | F1 incompleta | FPR | rejeitadas |")
+    print("|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
 
     for taxa in TAXAS:
         ok = []

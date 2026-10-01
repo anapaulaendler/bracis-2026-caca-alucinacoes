@@ -89,6 +89,7 @@ def main() -> None:
     a, b = metades(textos)
 
     print("| fold | Brier antes | Brier depois | score antes | score depois |")
+    print("|---|---:|---:|---:|---:|")
 
     for nome, calibragem, avaliacao in (("A-B", a, b), ("B-A", b, a)):
         tabela = calibrar(acertos_por_citacao(rodar(calibragem, SEEDS_CALIBRAR, recursos), solution))

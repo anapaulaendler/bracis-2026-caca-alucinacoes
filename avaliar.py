@@ -53,7 +53,7 @@ def main() -> None:
 
     for nivel, d in r["niveis"].items():
         f1 = "  ".join(f"{c}={v:.2f}" for c, v in d["f1_por_classe"].items())
-        print(f"nível {nivel}: score={d['score']:.4f}  macroF1={d['macro_f1']:.4f}  "f"tau={d['tau']:.2f}  [{f1}]")
+        print(f"nível {nivel}: score={d['score']:.4f}  macroF1={d['macro_f1']:.4f}  "f"FPR={d['tau']:.2f}  [{f1}]")
     print(f"SCORE FINAL: {r['score_final']:.4f}   (máximo 1.1000)")
 
 
