@@ -69,6 +69,22 @@ def test_trecho_bate_com_offsets():
         assert texto[c["inicio"]:c["fim"]] == c["trecho"], c
 
 
+def test_crlf_preserva_offsets():
+    import tempfile
+    from main import ler_textos
+
+    texto = "O art. 1.134 da Lei nº\r\n13.105/2015 e a Súmula 7 do STJ,\r\nalém do RE. nº 3.647.129-RS.\r\n"
+    with tempfile.TemporaryDirectory() as d:
+        (Path(d) / "doc.txt").write_bytes(texto.encode("utf-8"))
+        ((_, lido),) = ler_textos(Path(d))
+
+    assert lido == texto  # sem traduzir \r\n
+    citacoes = extrair(lido) + extrair_juris(lido)
+    assert len(citacoes) == 3, citacoes
+    for c in citacoes:
+        assert lido[c["inicio"]:c["fim"]] == c["trecho"], c
+
+
 def test_carregar_leis_pula_dispositivo_fora_do_padrao():
     import sqlite3
     import tempfile

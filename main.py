@@ -24,7 +24,7 @@ def carregar_recursos() -> tuple[dict, dict, dict]:
 
 
 def ler_textos(pasta: Path) -> list[tuple[str, str]]:
-    return [(txt.stem, txt.read_text(encoding="utf-8")) for txt in sorted(pasta.glob("*.txt"))]
+    return [(txt.stem, txt.open(encoding="utf-8", newline="").read()) for txt in sorted(pasta.glob("*.txt"))]
 
 
 def processar_textos(textos: list[tuple[str, str]], recursos: tuple) -> list[dict]:
