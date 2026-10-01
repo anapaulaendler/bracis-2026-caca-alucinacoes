@@ -18,10 +18,18 @@ Solução para o desafio **Jusbrasil × BRACIS 2026**. O sistema lê um parecer 
 
 Os dados da competição não são redistribuídos (regras do desafio). Coloque o conteúdo do zip em `data/`.
 
-Para gerar a submissão basta Python 3.10+, sem dependências. O resultado é determinístico:
+Ponto de entrada único. O índice é reconstruído do `.db` a cada execução, então uma base nova funciona sem passo extra:
 
 ```bash
-bash run.sh [pasta_txt] [saida.csv]  # padrão: data/txt -> out/submission.csv
+docker build -t caca-alucinacoes .
+docker run --rm --network none -v /caminho/dados:/dados -v /caminho/saida:/saida \
+    caca-alucinacoes /dados/base.db /dados/txt /saida/submission.csv
+```
+
+Sem Docker, basta Python 3.10+ (só biblioteca padrão, determinístico, CPU):
+
+```bash
+bash run.sh <caminho_db> <pasta_txt> <arquivo_saida>
 ```
 
 Avaliação e experimentos (precisam de pandas):

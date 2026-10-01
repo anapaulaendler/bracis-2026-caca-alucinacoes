@@ -54,9 +54,9 @@ def numero_do_cabecalho(tribunal: str, texto: str) -> tuple[str, str] | None:
     return None
 
 
-def carregar_indice() -> dict[str, list[dict]]:
+def carregar_indice(db: Path = DB) -> dict[str, list[dict]]:
     indice = {}
-    con = sqlite3.connect(DB)
+    con = sqlite3.connect(db)
 
     for doc_id, tribunal, texto in con.execute("SELECT id, tribunal, texto FROM documentos WHERE natureza = 'acordao'"):
    
@@ -78,15 +78,16 @@ def carregar_indice() -> dict[str, list[dict]]:
     return indice
 
 
-def carregar_sumulas() -> dict[tuple[bool, int], tuple[int, str]]:
+def carregar_sumulas(db: Path = DB) -> dict[tuple[bool, int], tuple[int, str]]:
     sumulas = {}
 
-    con = sqlite3.connect(DB)
+    con = sqlite3.connect(db)
 
     for doc_id, tribunal, texto in con.execute("SELECT id, tribunal, texto FROM documentos WHERE natureza = 'sumula'"):
         m = re.match(r"Súmula\s+(Vinculante\s+)?n\.\s*(\d+)", texto)
         
-        assert m is not None
+        if m is None:
+            continue # o .db da avaliação é outro: formato estranho não derruba a execução
         sumulas[(bool(m.group(1)), int(m.group(2)))] = (doc_id, tribunal)
     
     con.close()

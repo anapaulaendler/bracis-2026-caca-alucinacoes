@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
-# Uso: bash run.sh [pasta_txt] [saida.csv]
-# Espera a base em data/desafio1_bracis.db. O pipeline só usa a biblioteca padrão (Python 3.10+).
+# Uso: bash run.sh <caminho_db> <pasta_txt> <arquivo_saida>
+# Só usa a biblioteca padrão (Python 3.10+). O índice é reconstruído do .db a cada execução.
 set -euo pipefail
 
-RAIZ="$(cd "$(dirname "$0")" && pwd)"
-TXT="$(realpath -m "${1:-$RAIZ/data/txt}")"
-SAIDA="$(realpath -m "${2:-$RAIZ/out/submission.csv}")"
-
-cd "$RAIZ"
-python3 main.py "$TXT"
-
-if [ "$SAIDA" != "$RAIZ/out/submission.csv" ]; then
-    mkdir -p "$(dirname "$SAIDA")"
-    cp out/submission.csv "$SAIDA"
+if [ $# -ne 3 ]; then
+    echo "uso: bash run.sh <caminho_db> <pasta_txt> <arquivo_saida>" >&2
+    exit 2
 fi
+
+RAIZ="$(cd "$(dirname "$0")" && pwd)"
+DB="$(realpath -m "$1")"
+TXT="$(realpath -m "$2")"
+SAIDA="$(realpath -m "$3")"
+
+mkdir -p "$(dirname "$SAIDA")"
+cd "$RAIZ"
+python3 main.py "$TXT" --db "$DB" --saida "$SAIDA"
